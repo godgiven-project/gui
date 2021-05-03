@@ -1,0 +1,79 @@
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script src="../dist/gui-form-builder.js" type="module"></script>
+		<title>ui builder</title>
+	</head>
+	<body>
+    <style>
+      .Simple{ 
+        grid-template: 150px / auto auto auto;
+      }
+      .gridArea{
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+        grid-template-areas: 'userName userName password password . .' 
+                             'submit submit . . . .';
+      }
+    </style>
+		<br/>
+    <h2> Simple </h2>
+    <form action="index.html" method="POST">
+      <gui-form-builder class="Simple"></gui-form-builder>
+    </form>
+    <h2> Grid Area </h2>
+    <form action="index.html" method="POST">
+      <gui-form-builder GridArea class="gridArea"></gui-form-builder>
+    </form>
+    <script>
+      const data = {
+        "display": "form",
+        "settings": {  
+          "id": "1ec0f8ee-6685-5d98-a847-26f67b67d6f0",
+          "action": "https://files.form.io/pdf/5692b91fd1028f01000407e3/file/1ec0f8ee-6685-5d98-a847-26f67b67d6f0",
+          "type": "POST"
+        },
+        "components": [
+            {
+                "label": "user name",
+                "labelPosition": "left-left",
+                "placeholder": "user name",
+                "tableView": true,
+                "validate": {
+                    "required": true
+                },
+                "key": "userName",
+                "type": "textfield",
+                "input": true
+            },
+            {
+                "label": "Password",
+                "labelPosition": "left-left",
+                "placeholder": "Password",
+                "tableView": false,
+                "validate": {
+                    "required": true
+                },
+                "key": "password",
+                "type": "password",
+                "input": true,
+                "protected": true
+            },
+            {
+                "type": "button",
+                "label": "Submit",
+                "key": "submit",
+                "disableOnInvalid": true,
+                "input": true,
+                "tableView": false
+            }
+        ]
+      };
+
+      const uiBuilder = document.querySelectorAll('gui-form-builder');
+      for (let index = 0; index < uiBuilder.length; index++) {
+        uiBuilder[index].List = data;        
+      }
+    </script>
+	</body>
+</html>

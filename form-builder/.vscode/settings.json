@@ -1,0 +1,19 @@
+
+{
+    "cSpell.words": [
+      "textfield",
+      "webcomponents",
+      "webcomponentsjs"
+    ],
+    "eslint.packageManager": "yarn",
+    "npm.packageManager": "yarn",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": true
+    },
+    "editor.formatOnPaste": false,
+    "editor.formatOnSave": false,
+    "lit-plugin.strict": true,
+    "lit-plugin.rules.no-unknown-attribute": "off",
+    "lit-plugin.rules.no-invalid-css": "off"
+}
+  
