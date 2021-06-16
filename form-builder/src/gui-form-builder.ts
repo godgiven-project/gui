@@ -1,6 +1,6 @@
-import { nothing } from 'lit-html';
-import { LitElement, html, css, property, customElement } from 'lit-element';
-import type { TemplateResult } from 'lit-element';
+import { LitElement, html, css, nothing } from 'lit';
+import { property, customElement, eventOptions } from 'lit/decorators.js';
+import type { TemplateResult } from 'lit';
 
 declare global
 {
@@ -52,14 +52,18 @@ export interface input
   disabled?: boolean;
 }
 // ******************************************************************************
-
+interface inputHtmlTag extends Element
+{
+  value: string;
+}
 @customElement('gui-form-builder')
 export class GuiFormBuilderElementClass extends LitElement
 {
   constructor()
   {
     super();
-    this.addEventListener('click', this._sendData);
+    this._sendData = this._sendData.bind(this);
+    // this.addEventListener('click', this._sendData);
   }
 
   static styles = [
@@ -133,26 +137,56 @@ export class GuiFormBuilderElementClass extends LitElement
     `
   ];
 
-  @property({ type: Boolean, reflect: true })
-  GridArea?: boolean = false;
-
   @property({ type: Object, attribute: false })
   List?: form_builder;
 
-  _sendData(): void
+  @property({ type: Boolean, reflect: true })
+  GridArea?: boolean = false;
+
+  @property({ type: Boolean, reflect: true })
+  Send?: boolean = false;
+
+  private _sendData(): void
   {
-    const node = this.shadowRoot?.host.parentElement;
-    if (node == null) { return; }
-    const mainForm = node as FormElement;
-    // const action = node.action;
-    console.log(mainForm.action);
-    console.log(mainForm.method);
+    if (this.List?.components == null) { return; }
+
+    const data: Record<string, string> = {};
+    const components = this.List?.components;
+
+    for (let index = 0; index < components.length; index++)
+    {
+      if (components[index].type === 'textfield')
+      {
+        const element = this.renderRoot.querySelector(`input[name="${components[index].key}"]`) as inputHtmlTag;
+        data[components[index].key] = element?.value;
+      }
+      else if (components[index].type === 'password')
+      {
+        const element = this.renderRoot.querySelector(`input[name="${components[index].key}"]`) as inputHtmlTag;
+        data[components[index].key] = element?.value;
+      }
+    }
+
+    if (this.Send === true)
+    {
+      const node = this.shadowRoot?.host.parentElement;
+      if (node == null) { return; }
+      const mainForm = node as FormElement;
+      console.log(mainForm.action);
+      console.log(mainForm.method);
+    }
+    else
+    {
+      console.log('dispatchEvent form-action', this);
+      this.dispatchEvent(new CustomEvent('form-action', {
+        detail: data
+      }));
+    }
   }
 
   render(): TemplateResult | typeof nothing
   {
-    if (this.List === undefined) { return nothing; }
-    console.log(this.List.components);
+    if (this.List?.components == null) { return nothing; }
     return html` 
       ${this.contentTemplate()}
     `;
@@ -160,22 +194,20 @@ export class GuiFormBuilderElementClass extends LitElement
 
   private contentTemplate(): TemplateResult | typeof nothing
   {
-    const functions: { [K: string]: (item: form_element) => TemplateResult; } = {
-      textfield: this.textField,
-      password: this.passWord,
-      button: this.button
-    };
+    if (this.textfield == null) { return nothing; }
+    if (this.password == null) { return nothing; }
+    if (this.button == null) { return nothing; }
     return html`${this.List!.components.map((item) =>
       {
-        if (item.type in functions)
+        if (item.type in this)
         {
           if (this.GridArea === true)
           {
-            return html`<div style="grid-area:${item.key};" class=${item.key + ' gui-form-builder'}>${functions[item.type](item)}</div>`;
+            return html`<div style="grid-area:${item.key};" class=${item.key + ' gui-form-builder'}>${(this as any)[item.type](item)}</div>`;
           }
           else
           {
-            return html`<div class=${item.key + ' gui-form-builder'}>${functions[item.type](item)}</div>`;
+            return html`<div class=${item.key + ' gui-form-builder'}>${(this as any)[item.type](item)}</div>`;
           }
         }
         else
@@ -186,8 +218,9 @@ export class GuiFormBuilderElementClass extends LitElement
     )}`;
   }
 
-  private textField(item: form_element): TemplateResult
+  private textfield(item: form_element): TemplateResult | typeof nothing
   {
+    if (this.textfield == null) { return nothing; }
     return html`
     <input 
       type="text" 
@@ -196,7 +229,7 @@ export class GuiFormBuilderElementClass extends LitElement
     />`;
   }
 
-  private passWord(item: form_element): TemplateResult
+  private password(item: form_element): TemplateResult | typeof nothing
   {
     return html`
     <input
@@ -206,15 +239,17 @@ export class GuiFormBuilderElementClass extends LitElement
     />`;
   }
 
+  @eventOptions({ passive: true })
   private button(item: form_element): TemplateResult
   {
     return html`
-    <button
-      type="button"
-      name="${item.key}"
-      @click="${this._sendData}"
-    >
-      ${item.label}
-    </button>`;
+      <button
+        type="button"
+        name="${item.key}"
+        @click=${this._sendData}
+      >
+        ${item.label}
+      </button>
+    `;
   }
 }

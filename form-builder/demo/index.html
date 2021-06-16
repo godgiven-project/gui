@@ -17,14 +17,35 @@
       }
     </style>
 		<br/>
+
+
+
+
+
     <h2> Simple </h2>
     <form action="index.html" method="POST">
-      <gui-form-builder class="Simple"></gui-form-builder>
+      <gui-form-builder 
+        class="Simple" 
+        onclick="console.log('ssq')"
+        form-action="console.log('sss');"
+      >
+      </gui-form-builder>
     </form>
+
+
     <h2> Grid Area </h2>
     <form action="index.html" method="POST">
-      <gui-form-builder GridArea class="gridArea"></gui-form-builder>
+      <gui-form-builder 
+        GridArea 
+        class="gridArea"
+      >
+      </gui-form-builder>
     </form>
+
+
+
+
+
     <script>
       const data = {
         "display": "form",
