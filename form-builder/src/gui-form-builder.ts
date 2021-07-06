@@ -1,6 +1,7 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { property, customElement, eventOptions } from 'lit/decorators.js';
 import type { TemplateResult } from 'lit';
+import type { FormElement, formItem, formBuilder } from './gui-form-type';
 
 declare global
 {
@@ -9,53 +10,7 @@ declare global
     index: number;
   }
 }
-interface FormElement extends HTMLElement
-{
-  action?: string;
-  method?: string;
-}
-// ******************************************************************************
-// ***************** form_element ****************** //
-export interface form_element
-{
-  label?: string;
-  labelPosition?: string;
-  placeholder?: string;
-  tableView?: true;
-  validate?: validate_element[];
-  key: string;
-  type: string;
-  input: boolean;
-  protected?: boolean;
-  disableOnInvalid?: boolean;
-}
-export interface validate_element
-{
-  required: boolean;
-  src: string;
-}
-// ***************** form_element ****************** //
 
-export interface form_setting
-{
-  id: string;
-}
-export interface form_builder
-{
-  display: string;
-  settings: form_setting;
-  components: form_element[];
-}
-export interface input
-{
-  title: string;
-  disabled?: boolean;
-}
-// ******************************************************************************
-interface inputHtmlTag extends Element
-{
-  value: string;
-}
 @customElement('gui-form-builder')
 export class GuiFormBuilderElementClass extends LitElement
 {
@@ -138,7 +93,7 @@ export class GuiFormBuilderElementClass extends LitElement
   ];
 
   @property({ type: Object, attribute: false })
-  List?: form_builder;
+  List?: formBuilder;
 
   @property({ type: Boolean, reflect: true })
   GridArea?: boolean = false;
@@ -157,13 +112,13 @@ export class GuiFormBuilderElementClass extends LitElement
     {
       if (components[index].type === 'textfield')
       {
-        const element = this.renderRoot.querySelector(`input[name="${components[index].key}"]`) as inputHtmlTag;
-        data[components[index].key] = element?.value;
+        const element: HTMLInputElement | null = this.renderRoot.querySelector(`input[name="${components[index].key}"]`);
+        data[components[index].key] = element?.value ?? '';
       }
       else if (components[index].type === 'password')
       {
-        const element = this.renderRoot.querySelector(`input[name="${components[index].key}"]`) as inputHtmlTag;
-        data[components[index].key] = element?.value;
+        const element: HTMLInputElement | null = this.renderRoot.querySelector(`input[name="${components[index].key}"]`);
+        data[components[index].key] = element?.value ?? '';
       }
     }
 
@@ -218,7 +173,7 @@ export class GuiFormBuilderElementClass extends LitElement
     )}`;
   }
 
-  private textfield(item: form_element): TemplateResult | typeof nothing
+  private textfield(item: formItem): TemplateResult | typeof nothing
   {
     if (this.textfield == null) { return nothing; }
     return html`
@@ -229,7 +184,7 @@ export class GuiFormBuilderElementClass extends LitElement
     />`;
   }
 
-  private password(item: form_element): TemplateResult | typeof nothing
+  private password(item: formItem): TemplateResult | typeof nothing
   {
     return html`
     <input
@@ -240,7 +195,7 @@ export class GuiFormBuilderElementClass extends LitElement
   }
 
   @eventOptions({ passive: true })
-  private button(item: form_element): TemplateResult
+  private button(item: formItem): TemplateResult
   {
     return html`
       <button
