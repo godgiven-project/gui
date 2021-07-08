@@ -31,6 +31,9 @@ settings:
       - LitElement # TODO: Add other classes
 rules:
   # iShia recommended rules
+  no-eval: 
+    - error
+    - allowIndirect: true
   curly:
     - error
     - all

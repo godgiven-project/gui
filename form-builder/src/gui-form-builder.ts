@@ -105,9 +105,11 @@ export class GuiFormBuilderElementClass extends LitElement
   {
     if (this.List?.components == null) { return; }
 
+    // define data object and give list
     const data: Record<string, string> = {};
     const components = this.List?.components;
 
+    // give all data value
     for (let index = 0; index < components.length; index++)
     {
       if (components[index].type === 'textfield')
@@ -122,20 +124,27 @@ export class GuiFormBuilderElementClass extends LitElement
       }
     }
 
-    if (this.Send === true)
+    if (this.Send === false) { this.formAction(data); return; }
+
+    // send data to server
+    const node = this.shadowRoot?.host.parentElement;
+    if (node == null) { return; }
+    const mainForm = node as FormElement;
+    console.log(mainForm.action);
+    console.log(mainForm.method);
+    this.formAction(mainForm.method);
+  }
+
+  formAction(data: unknown): void
+  {
+    // dispatch event
+    const action = this.getAttribute('form-action');
+    this.dispatchEvent(new CustomEvent('form-action', {
+      detail: data
+    }));
+    if (action != null)
     {
-      const node = this.shadowRoot?.host.parentElement;
-      if (node == null) { return; }
-      const mainForm = node as FormElement;
-      console.log(mainForm.action);
-      console.log(mainForm.method);
-    }
-    else
-    {
-      console.log('dispatchEvent form-action', this);
-      this.dispatchEvent(new CustomEvent('form-action', {
-        detail: data
-      }));
+      (data, eval)(action);
     }
   }
 
