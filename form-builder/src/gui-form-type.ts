@@ -1,8 +1,3 @@
-export interface FormElement extends HTMLElement
-{
-  action?: string;
-  method?: string;
-}
 // ******************************************************************************
 // ***************** formItem ****************** //
 export interface formItem
@@ -29,12 +24,14 @@ export interface validateElement
 export interface formSetting
 {
   id: string;
+  method: 'POST' | 'GET';
+  action: string;
 }
 
 export interface formBuilder
 {
   display: string;
-  settings: formSetting;
+  setting: formSetting;
   components: formItem[];
 }
 
