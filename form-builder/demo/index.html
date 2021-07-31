@@ -25,8 +25,9 @@
     <h2> Simple </h2>
     <form action="index.html" method="POST">
       <gui-form-builder 
+        send
         class="Simple" 
-        form-action="console.log(data);"
+        form-action="reciveData();"
       >
       </gui-form-builder>
     </form>
@@ -46,12 +47,12 @@
 
 
     <script>
-      const data = {
+      const data2 = {
         "display": "form",
-        "settings": {  
+        "setting": {  
           "id": "1ec0f8ee-6685-5d98-a847-26f67b67d6f0",
-          "action": "https://files.form.io/pdf/5692b91fd1028f01000407e3/file/1ec0f8ee-6685-5d98-a847-26f67b67d6f0",
-          "type": "POST"
+          "action": "https://6103ed303356ea001748f582.mockapi.io/api/v1/users/",
+          "method": "POST"
         },
         "components": [
             {
@@ -80,7 +81,7 @@
                 "protected": true
             },
             {
-                "type": "button",
+                "type": "submit",
                 "label": "Submit",
                 "key": "submit",
                 "disableOnInvalid": true,
@@ -92,7 +93,10 @@
 
       const uiBuilder = document.querySelectorAll('gui-form-builder');
       for (let index = 0; index < uiBuilder.length; index++) {
-        uiBuilder[index].List = data;        
+        uiBuilder[index].List = data2;        
+      }
+      function reciveData() {
+        console.log(document.querySelector('.Simple').Data);
       }
     </script>
 	</body>

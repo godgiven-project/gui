@@ -1,7 +1,7 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { property, customElement, eventOptions } from 'lit/decorators.js';
 import type { TemplateResult } from 'lit';
-import type { FormElement, formItem, formBuilder } from './gui-form-type';
+import type { formItem, formBuilder } from './gui-form-type';
 
 declare global
 {
@@ -101,6 +101,12 @@ export class GuiFormBuilderElementClass extends LitElement
   @property({ type: Boolean, reflect: true })
   Send?: boolean = false;
 
+  @property({ type: Object, attribute: false })
+  Data? = {};
+
+  @property({ type: Object, attribute: false })
+  Error? = {};
+
   private _sendData(): void
   {
     if (this.List?.components == null) { return; }
@@ -124,15 +130,27 @@ export class GuiFormBuilderElementClass extends LitElement
       }
     }
 
+    this.Data = data;
     if (this.Send === false) { this.formAction(data); return; }
 
-    // send data to server
-    const node = this.shadowRoot?.host.parentElement;
-    if (node == null) { return; }
-    const mainForm = node as FormElement;
-    console.log(mainForm.action);
-    console.log(mainForm.method);
-    this.formAction(mainForm.method);
+    fetch(this.List.setting.action, {
+      method: this.List.setting.method, // or 'PUT'
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+      .then(response => response.json())
+      .then(data =>
+      {
+        this.Data = data;
+        this.formAction(data);
+      })
+      .catch((error) =>
+      {
+        this.Error = error;
+        this.formError(error);
+      });
   }
 
   formAction(data: unknown): void
@@ -140,6 +158,19 @@ export class GuiFormBuilderElementClass extends LitElement
     // dispatch event
     const action = this.getAttribute('form-action');
     this.dispatchEvent(new CustomEvent('form-action', {
+      detail: data
+    }));
+    if (action != null)
+    {
+      // console.log(data);
+      (data, eval)(action);
+    }
+  }
+
+  formError(data: unknown): void
+  {
+    const action = this.getAttribute('form-error');
+    this.dispatchEvent(new CustomEvent('form-error', {
       detail: data
     }));
     if (action != null)
@@ -160,7 +191,7 @@ export class GuiFormBuilderElementClass extends LitElement
   {
     if (this.textfield == null) { return nothing; }
     if (this.password == null) { return nothing; }
-    if (this.button == null) { return nothing; }
+    if (this.submit == null) { return nothing; }
     return html`${this.List!.components.map((item) =>
       {
         if (item.type in this)
@@ -204,7 +235,7 @@ export class GuiFormBuilderElementClass extends LitElement
   }
 
   @eventOptions({ passive: true })
-  private button(item: formItem): TemplateResult
+  private submit(item: formItem): TemplateResult
   {
     return html`
       <button
