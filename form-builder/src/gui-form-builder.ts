@@ -18,6 +18,7 @@ export class GuiFormBuilderElementClass extends LitElement
   {
     super();
     this._sendData = this._sendData.bind(this);
+    // this.addEventListener('click', this._sendData);
   }
 
   static styles = [
@@ -106,44 +107,37 @@ export class GuiFormBuilderElementClass extends LitElement
   @property({ type: Object, attribute: false })
   Error? = {};
 
-  private headerList: Record<string, string> = {
-    'Content-Type': 'application/json'
-  };
-
   private _sendData(): void
   {
-    if (this.List?.componentList == null) { return; }
+    if (this.List?.components == null) { return; }
 
     // define data object and give list
     const data: Record<string, string> = {};
-    const componentList = this.List?.componentList;
+    const components = this.List?.components;
 
     // give all data value
-    for (let index = 0; index < componentList.length; index++)
+    for (let index = 0; index < components.length; index++)
     {
-      if (componentList[index].type === 'textfield')
+      if (components[index].type === 'textfield')
       {
-        const element: HTMLInputElement | null = this.renderRoot.querySelector(`input[name="${componentList[index].key}"]`);
-        data[componentList[index].key] = element?.value ?? '';
+        const element: HTMLInputElement | null = this.renderRoot.querySelector(`input[name="${components[index].key}"]`);
+        data[components[index].key] = element?.value ?? '';
       }
-      else if (componentList[index].type === 'password')
+      else if (components[index].type === 'password')
       {
-        const element: HTMLInputElement | null = this.renderRoot.querySelector(`input[name="${componentList[index].key}"]`);
-        data[componentList[index].key] = element?.value ?? '';
+        const element: HTMLInputElement | null = this.renderRoot.querySelector(`input[name="${components[index].key}"]`);
+        data[components[index].key] = element?.value ?? '';
       }
     }
 
     this.Data = data;
     if (this.Send === false) { this.formAction(data); return; }
 
-    if (this.List.setting.headers != null)
-    {
-      this.headerList = this.List.setting.headers;
-    }
-
     fetch(this.List.setting.action, {
-      method: this.List.setting.method ?? 'POST', // or 'PUT'
-      headers: this.headerList,
+      method: this.List.setting.method, // or 'PUT'
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(data),
     })
       .then(response => response.json())
@@ -187,7 +181,7 @@ export class GuiFormBuilderElementClass extends LitElement
 
   render(): TemplateResult | typeof nothing
   {
-    if (this.List?.componentList == null) { return nothing; }
+    if (this.List?.components == null) { return nothing; }
     return html` 
       ${this.contentTemplate()}
     `;
@@ -198,7 +192,7 @@ export class GuiFormBuilderElementClass extends LitElement
     if (this.textfield == null) { return nothing; }
     if (this.password == null) { return nothing; }
     if (this.submit == null) { return nothing; }
-    return html`${this.List!.componentList.map((item) =>
+    return html`${this.List!.components.map((item) =>
       {
         if (item.type in this)
         {

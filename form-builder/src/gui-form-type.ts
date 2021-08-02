@@ -24,16 +24,15 @@ export interface validateElement
 export interface formSetting
 {
   id: string;
-  method?: 'POST' | 'GET';
+  method: 'POST' | 'GET';
   action: string;
-  headers?: Record<string, string>;
 }
 
 export interface formBuilder
 {
   display: string;
   setting: formSetting;
-  componentList: formItem[];
+  components: formItem[];
 }
 
 export interface input
