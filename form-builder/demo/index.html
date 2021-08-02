@@ -15,6 +15,10 @@
         grid-template-areas: 'userName userName password password . .' 
                              'submit submit . . . .';
       }
+
+      body{
+        font-family: Tahoma !important;
+      }
     </style>
 		<br/>
 
@@ -102,10 +106,10 @@
 
       const uiBuilder = document.querySelectorAll('gui-form-builder');
       for (let index = 0; index < uiBuilder.length; index++) {
-        uiBuilder[index].List = data2;        
+        uiBuilder[index].Data = data2;        
       }
       function reciveData() {
-        console.log(document.querySelector('.Simple').Data);
+        console.log(document.querySelector('.Simple').Resolve);
       }
     </script>
 	</body>
