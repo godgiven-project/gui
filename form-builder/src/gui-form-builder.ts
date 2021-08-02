@@ -1,5 +1,6 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { property, customElement, eventOptions } from 'lit/decorators.js';
+import { ifDefined } from 'lit/directives/if-defined.js';
 import type { TemplateResult } from 'lit';
 import type { formItem, formBuilder } from './gui-form-type';
 
@@ -198,6 +199,7 @@ export class GuiFormBuilderElementClass extends LitElement
     if (this.textfield == null) { return nothing; }
     if (this.password == null) { return nothing; }
     if (this.submit == null) { return nothing; }
+    if (this.image == null) { return nothing; }
     return html`${this.List!.componentList.map((item) =>
       {
         if (item.type in this)
@@ -226,7 +228,18 @@ export class GuiFormBuilderElementClass extends LitElement
     <input 
       type="text" 
       name="${item.key}" 
-      placeholder=${item.placeholder !== undefined ? item.placeholder : ''} 
+      placeholder=${ifDefined(item.placeholder)}
+    />`;
+  }
+
+  private image(item: formItem): TemplateResult | typeof nothing
+  {
+    if (this.image == null) { return nothing; }
+    return html`
+    <img
+      id="${item.key}"
+      src="${ifDefined(item.value)}"
+      alt="${ifDefined(item.label)}" 
     />`;
   }
 
@@ -236,7 +249,7 @@ export class GuiFormBuilderElementClass extends LitElement
     <input
       type="password"
       name="${item.key}"
-      placeholder=${item.placeholder !== undefined ? item.placeholder : ''}
+      placeholder=${ifDefined(item.placeholder)}
     />`;
   }
 

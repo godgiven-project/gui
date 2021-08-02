@@ -7,6 +7,7 @@ export interface formItem
   placeholder?: string;
   tableView?: true;
   validate?: validateElement[];
+  value?: string;
   key: string;
   type: string;
   input: boolean;
