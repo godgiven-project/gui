@@ -36,6 +36,13 @@ export class GuiFormBuilderElementClass extends LitElement
         --gui-builder-input-radius: 0.06em;
         --gui-builder-input-outline: none;
       }
+
+      input, 
+      textarea, 
+      button {
+        font-family: inherit;
+      }
+
       button,
       input[type="text"],
       input[type="password"]{
@@ -93,7 +100,7 @@ export class GuiFormBuilderElementClass extends LitElement
   ];
 
   @property({ type: Object, attribute: false })
-  List?: formBuilder;
+  Data?: formBuilder;
 
   @property({ type: Boolean, reflect: true })
   GridArea?: boolean = false;
@@ -102,7 +109,7 @@ export class GuiFormBuilderElementClass extends LitElement
   Send?: boolean = false;
 
   @property({ type: Object, attribute: false })
-  Data? = {};
+  Resolve? = {};
 
   @property({ type: Object, attribute: false })
   Error? = {};
@@ -113,11 +120,11 @@ export class GuiFormBuilderElementClass extends LitElement
 
   private _sendData(): void
   {
-    if (this.List?.componentList == null) { return; }
+    if (this.Data?.componentList == null) { return; }
 
     // define data object and give list
     const data: Record<string, string> = {};
-    const componentList = this.List?.componentList;
+    const componentList = this.Data?.componentList;
 
     // give all data value
     for (let index = 0; index < componentList.length; index++)
@@ -134,23 +141,23 @@ export class GuiFormBuilderElementClass extends LitElement
       }
     }
 
-    this.Data = data;
+    this.Resolve = data;
     if (this.Send === false) { this.formAction(data); return; }
 
-    if (this.List.setting.headers != null)
+    if (this.Data.setting.headers != null)
     {
-      this.headerList = this.List.setting.headers;
+      this.headerList = this.Data.setting.headers;
     }
 
-    fetch(this.List.setting.action, {
-      method: this.List.setting.method ?? 'POST', // or 'PUT'
+    fetch(this.Data.setting.action, {
+      method: this.Data.setting.method ?? 'POST', // or 'PUT'
       headers: this.headerList,
       body: JSON.stringify(data),
     })
       .then(response => response.json())
       .then(data =>
       {
-        this.Data = data;
+        this.Resolve = data;
         this.formAction(data);
       })
       .catch((error) =>
@@ -188,7 +195,7 @@ export class GuiFormBuilderElementClass extends LitElement
 
   render(): TemplateResult | typeof nothing
   {
-    if (this.List?.componentList == null) { return nothing; }
+    if (this.Data?.componentList == null) { return nothing; }
     return html` 
       ${this.contentTemplate()}
     `;
@@ -200,7 +207,7 @@ export class GuiFormBuilderElementClass extends LitElement
     if (this.password == null) { return nothing; }
     if (this.submit == null) { return nothing; }
     if (this.image == null) { return nothing; }
-    return html`${this.List!.componentList.map((item) =>
+    return html`${this.Data!.componentList.map((item) =>
       {
         if (item.type in this)
         {
