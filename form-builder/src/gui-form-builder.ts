@@ -35,6 +35,7 @@ export class GuiFormBuilderElementClass extends LitElement
         --gui-builder-input-text-color: rgba(0,0,0,.85);
         --gui-builder-input-radius: 0.06em;
         --gui-builder-input-outline: none;
+        --gui-builder-end-padding:  1em;
       }
 
       input, 
@@ -63,7 +64,7 @@ export class GuiFormBuilderElementClass extends LitElement
         border-radius: var(--gui-builder-input-radius);
         outline: var(--gui-builder-input-outline);
         box-sizing: border-box;
-        width: calc( 100% - 1em );
+        width: calc( 100% - var(--gui-builder-end-padding) );
         margin:0em;
       }
       input[type="text"]:hover,
@@ -77,7 +78,7 @@ export class GuiFormBuilderElementClass extends LitElement
         outline: 0;
       }
       .gui-form-builder{
-        padding-inline-end: 1em;
+        padding-inline-end: var(--gui-builder-end-padding);
         padding-bottom: 1em;
       }
       button{
