@@ -28,20 +28,32 @@ export class GuiFormBuilderElementClass extends LitElement
         --gui-builder-height-element: 32px;
         --gui-builder-primary:        #40a9ff;
         --gui-builder-main-color:     #fff;
+        --gui-builder-loading-color:  #dedede;
         --gui-builder-input-font:     1.5em;
         --gui-builder-input-padding:  0.3em;
         --gui-builder-input-margin:   0.3em;
         --gui-builder-input-border:   0.03em solid #d9d9d9;
         --gui-builder-input-text-color: rgba(0,0,0,.85);
+        --gui-builder-input-text-loading-color: rgba(0,0,0,.3);
         --gui-builder-input-radius: 0.06em;
         --gui-builder-input-outline: none;
         --gui-builder-end-padding:  1em;
+      }
+
+      :host([loading]){
+        pointer-events: none;
       }
 
       input, 
       textarea, 
       button {
         font-family: inherit;
+      }
+
+      :host([loading]) input,
+      :host([loading]) input:hover{ 
+        color: var(--gui-builder-input-text-loading-color);
+        background: var(--gui-builder-loading-color) !important;
       }
 
       button,
@@ -115,6 +127,9 @@ export class GuiFormBuilderElementClass extends LitElement
   @property({ type: Object, attribute: false })
   Error? = {};
 
+  @property({ type: Boolean, reflect: true })
+  Loading: boolean = false;
+
   private headerList: Record<string, string> = {
     'Content-Type': 'application/json'
   };
@@ -122,6 +137,7 @@ export class GuiFormBuilderElementClass extends LitElement
   private _sendData(): void
   {
     if (this.Data?.componentList == null) { return; }
+    if (this.Loading) { return; }
 
     // define data object and give list
     const data: Record<string, string> = {};
@@ -150,6 +166,7 @@ export class GuiFormBuilderElementClass extends LitElement
       this.headerList = this.Data.setting.headers;
     }
 
+    this.Loading = true;
     fetch(this.Data.setting.action, {
       method: this.Data.setting.method ?? 'POST', // or 'PUT'
       headers: this.headerList,
@@ -158,11 +175,13 @@ export class GuiFormBuilderElementClass extends LitElement
       .then(response => response.json())
       .then(data =>
       {
+        this.Loading = false;
         this.Resolve = data;
         this.formAction(data);
       })
       .catch((error) =>
       {
+        this.Loading = false;
         this.Error = error;
         this.formError(error);
       });
