@@ -149,12 +149,22 @@ export class GuiFormBuilderElementClass extends LitElement
       if (componentList[index].type === 'textfield')
       {
         const element: HTMLInputElement | null = this.renderRoot.querySelector(`input[name="${componentList[index].key}"]`);
-        data[componentList[index].key] = element?.value ?? '';
+        const value: string | undefined = element?.value;
+        if (!this.validateData(componentList[index], value))
+        {
+          return;
+        }
+        data[componentList[index].key] = value ?? '';
       }
       else if (componentList[index].type === 'password')
       {
         const element: HTMLInputElement | null = this.renderRoot.querySelector(`input[name="${componentList[index].key}"]`);
-        data[componentList[index].key] = element?.value ?? '';
+        const value: string | undefined = element?.value;
+        if (!this.validateData(componentList[index], value))
+        {
+          return;
+        }
+        data[componentList[index].key] = value ?? '';
       }
     }
 
@@ -172,18 +182,25 @@ export class GuiFormBuilderElementClass extends LitElement
       headers: this.headerList,
       body: JSON.stringify(data),
     })
-      .then(response => response.json())
-      .then(data =>
+      .then(async response =>
       {
-        this.Loading = false;
-        this.Resolve = data;
-        this.formAction(data);
+        if (response.status !== 200 && response.status !== 201)
+        {
+          this.Loading = false;
+          this.Error = new Error(`ApiNotWork_${response.status ?? ''}`);
+        }
+        else
+        {
+          const data = await response.json();
+          this.Loading = false;
+          this.Resolve = data;
+          this.formAction(data);
+        }
       })
       .catch((error) =>
       {
         this.Loading = false;
-        this.Error = error;
-        this.formError(error);
+        this.Error = new Error(`NetworkError_${error as string ?? ''}`);
       });
   }
 
@@ -196,7 +213,6 @@ export class GuiFormBuilderElementClass extends LitElement
     }));
     if (action != null)
     {
-      // console.log(data);
       (data, eval)(action);
     }
   }
@@ -219,6 +235,38 @@ export class GuiFormBuilderElementClass extends LitElement
     return html` 
       ${this.contentTemplate()}
     `;
+  }
+
+  private validateData(item: formItem, value: string | undefined): boolean
+  {
+    if (item.validate?.required === true && value === undefined)
+    {
+      this.Error = new Error(`IsRequired_${item.key}`);
+      return false;
+    }
+
+    if (item.validate?.required === true && value!.length <= 0)
+    {
+      this.Error = new Error(`IsRequired_${item.key}`);
+      return false;
+    }
+
+    if (item.validate?.pattern != null)
+    {
+      if (value == null)
+      {
+        this.Error = new Error(`IsRequired_${item.key}`);
+        return false;
+      }
+      const regex = new RegExp(item.validate.pattern);
+      if (!regex.test(value))
+      {
+        this.Error = new Error(`IsNotValid_${item.key}`);
+        return false;
+      }
+    }
+
+    return true;
   }
 
   private contentTemplate(): TemplateResult | typeof nothing
