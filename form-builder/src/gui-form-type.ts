@@ -6,7 +6,7 @@ export interface formItem
   labelPosition?: string;
   placeholder?: string;
   tableView?: true;
-  validate?: validateElement[];
+  validate?: validateElement;
   value?: string;
   key: string;
   type: string;
@@ -18,7 +18,7 @@ export interface formItem
 export interface validateElement
 {
   required: boolean;
-  src: string;
+  pattern: string;
 }
 // ***************** form_element ****************** //
 
