@@ -3,113 +3,173 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<script src="../dist/gui-form-builder.js" type="module"></script>
+    <link rel="preconnect" href="//fdn.fontcdn.ir">
+    <link rel="preconnect" href="//v1.fontapi.ir">
+    <link href="https://v1.fontapi.ir/css/Vazir" rel="stylesheet">
 		<title>ui builder</title>
 	</head>
 	<body>
     <style>
-      .Simple{ 
-        grid-template: 150px / auto auto auto;
+      * {
+        font-family: 'Vazir', sans-serif;
       }
-      .gridArea{
-        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-        grid-template-areas: 'userName userName password password . .' 
-                             'submit submit . . . .';
+      body {
+        font-family: 'Vazir', sans-serif;
+        text-align: center;
+        direction: ltr;
       }
 
-      body{
-        font-family: Tahoma !important;
+      body:before {
+        z-index: -1;
+        position: absolute;
+        height: 50vh;
+        content: "";
+        top: 0;
+        left: 0;
+        right: 0;
+        background: #8bbabb;
+      }
+
+      .selfPresentForm { 
+        grid-template-columns: 1fr;
+        --gui-builder-end-padding: 0px;
+      }
+
+      .v1-godgiven-form{
+        display: inline-block;
+        margin-top: 5vh;
+        padding: 20px;
+        padding-top: 0px;
+        min-height: 80vh;
+        min-width: 270px;
+        max-width: 400px;
+        position: relative;
+      }
+
+      .card {
+        background: #fff;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        transition: 0.3s;
+        width: 40%;
+        border-radius: 5px;
+      }
+
+      .card:hover {
+        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+      }
+
+      .v1-godgiven-form .detail {
+        display: inline-block;
+        width: 100%;
+      }
+
+      .v1-godgiven-form .detail .footer {
+        position: absolute;
+        display: block;
+        width: 100%;
+        text-align: center;
+        bottom: 20px;
+        left: 0px;
+      }
+
+      .v1-godgiven-form .detail .footer span {
+        font-family: "Roboto","Noto Sans",sans-serif;
+      }
+      .v1-godgiven-form .detail .footer span svg{
+        color: #D7443E;
+        width: 17px;
+        height: 12px;
+        display: inline-block;
+      }
+
+      @media only screen and (max-width: 1000px) {
+        .v1-godgiven-form {
+          width: 70%;
+        }
+      }
+
+      @media only screen and (max-width: 578px) {
+        .v1-godgiven-form {
+          width: 80%;
+        }
+        h2 {
+          font-size: 1.3em;
+        }
+      }
+
+      @media only screen and (max-width: 468px) {
+        h2 {
+          font-size: 1em;
+        }
       }
     </style>
-		<br/>
-
-
-
-
-
-    <h2> Simple </h2>
-    <form action="index.html" method="POST">
-      <gui-form-builder 
-        send
-        class="Simple" 
-        form-action="reciveData();"
-      >
-      </gui-form-builder>
-    </form>
-
-
-    <h2> Grid Area </h2>
-    <form action="index.html" method="POST">
-      <gui-form-builder 
-        GridArea 
-        class="gridArea"
-      >
-      </gui-form-builder>
-    </form>
-
-
-
-
+    <div class="v1-godgiven-form card">
+      <h2> 
+        Gui form builder
+      </h2>
+      
+      <div class="detail">
+        <gui-form-builder
+          class="selfPresentForm"
+          send
+          form-action="Resolve(0);"
+        ></gui-form-builder>
+        <div class="footer">
+          <span>
+            Made 
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 391.837 391.837" style="enable-background:new 0 0 391.837 391.837;" xml:space="preserve">
+              <g>
+                <path style="fill:currentColor" d="M285.257,35.528c58.743,0.286,106.294,47.836,106.58,106.58   c0,107.624-195.918,214.204-195.918,214.204S0,248.165,0,142.108c0-58.862,47.717-106.58,106.58-106.58l0,0   c36.032-0.281,69.718,17.842,89.339,48.065C215.674,53.517,249.273,35.441,285.257,35.528z"/>
+              </g>
+            </svg>
+            by <a href="https://github.com/godgiven-project/gui/tree/main/" target="_blank">Godgiven-project</a>
+          </span>
+        </div>
+      </div>
+    </div>
 
     <script>
-      const data2 = {
+      const data1 = {
         "display": "form",
-        "setting": {  
-          "id": "1ec0f8ee-6685-5d98-a847-26f67b67d6f0",
-          "action": "https://6103ed303356ea001748f582.mockapi.io/api/v1/users/",
-          "method": "POST",
-          "headers": {
-            'Content-Type': 'application/text',
-          }
+        "headers": {
+          "Authorization": "Bearer " + "yourToken"
         },
+        "action": "https://6103ed303356ea001748f582.mockapi.io/api/v1/users/",
         "componentList": [
-            {
-                "type": "image",
-                "label": "Submit",
-                "value": "https://avatars.githubusercontent.com/u/16503692?s=64&v=4",
-                "key": "submit"
-            },
-            {
-                "label": "user name",
-                "labelPosition": "left-left",
-                "placeholder": "user name",
-                "tableView": true,
-                "validate": {
-                    "required": true
-                },
-                "key": "userName",
-                "type": "textfield",
-                "input": true
-            },
-            {
-                "label": "Password",
-                "labelPosition": "left-left",
-                "placeholder": "Password",
-                "tableView": false,
-                "validate": {
-                    "required": true
-                },
-                "key": "password",
-                "type": "password",
-                "input": true,
-                "protected": true
-            },
-            {
-                "type": "submit",
-                "label": "Submit",
-                "key": "submit",
-                "disableOnInvalid": true,
-                "input": true,
-                "tableView": false
-            }
+          {
+              "placeholder": "user name",
+              "validate": {
+                  "required": true
+              },
+              "key": "userName",
+              "type": "textfield",
+          },
+          {
+              "placeholder": "Password",
+              "validate": {
+                  "required": true
+              },
+              "key": "password",
+              "type": "password",
+          },
+          {
+              "type": "submit",
+              "label": "login",
+              "key": "submit",
+          }
         ]
       };
-
-      const uiBuilder = document.querySelectorAll('gui-form-builder');
-      for (let index = 0; index < uiBuilder.length; index++) {
-        uiBuilder[index].Data = data2;        
+    
+      const forms =  document.querySelectorAll('gui-form-builder');
+      const form = document.querySelectorAll('gui-form-builder')[0];
+      form.Data = data1;
+      
+      function Resolve() {
+        console.log(forms[0].Resolve);
       }
-      function reciveData() {
-        console.log(document.querySelector('.Simple').Resolve);
+
+      function Error(error) {
+        console.log(error);
       }
     </script>
 	</body>

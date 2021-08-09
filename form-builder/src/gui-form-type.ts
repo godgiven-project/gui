@@ -22,18 +22,13 @@ export interface validateElement
 }
 // ***************** form_element ****************** //
 
-export interface formSetting
+export interface formBuilder
 {
+  display: string;
   id: string;
   method?: 'POST' | 'GET';
   action: string;
   headers?: Record<string, string>;
-}
-
-export interface formBuilder
-{
-  display: string;
-  setting: formSetting;
   componentList: formItem[];
 }
 
