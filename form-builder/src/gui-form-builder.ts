@@ -171,14 +171,14 @@ export class GuiFormBuilderElementClass extends LitElement
     this.Resolve = data;
     if (this.Send === false) { this.formAction(data); return; }
 
-    if (this.Data.setting.headers != null)
+    if (this.Data.headers != null)
     {
-      this.headerList = this.Data.setting.headers;
+      this.headerList = this.Data.headers;
     }
 
     this.Loading = true;
-    fetch(this.Data.setting.action, {
-      method: this.Data.setting.method ?? 'POST', // or 'PUT'
+    fetch(this.Data.action, {
+      method: this.Data.method ?? 'POST', // or 'PUT'
       headers: this.headerList,
       body: JSON.stringify(data),
     })
