@@ -1,8 +1,8 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { property, customElement, eventOptions } from 'lit/decorators.js';
-import { ifDefined } from 'lit/directives/if-defined.js';
+import { TextField, Password, Image, Submit } from './elements/index';
 import type { TemplateResult } from 'lit';
-import type { formItem, formBuilder } from './gui-form-type';
+import type { formBuilder, itemFormBuilder } from './gui-form-type';
 
 declare global
 {
@@ -18,7 +18,7 @@ export class GuiFormBuilderElementClass extends LitElement
   constructor()
   {
     super();
-    this._sendData = this._sendData.bind(this);
+    this.sendData = this.sendData.bind(this);
   }
 
   static styles = [
@@ -115,6 +115,14 @@ export class GuiFormBuilderElementClass extends LitElement
   @property({ type: Object, attribute: false })
   Data?: formBuilder;
 
+  @property({ type: Object, attribute: false })
+  ElementList: Record<string, itemFormBuilder> = {
+    TextField,
+    Password,
+    Image,
+    Submit
+  };
+
   @property({ type: Boolean, reflect: true })
   GridArea?: boolean = false;
 
@@ -134,38 +142,29 @@ export class GuiFormBuilderElementClass extends LitElement
     'Content-Type': 'application/json'
   };
 
-  private _sendData(): void
+  @eventOptions({ passive: true })
+  public sendData(): void
   {
-    if (this.Data?.componentList == null) { return; }
+    if (this.Data?.elementList == null) { return; }
     if (this.Loading) { return; }
 
     // define data object and give list
     const data: Record<string, string> = {};
-    const componentList = this.Data?.componentList;
+    const elementList = this.Data?.elementList;
 
     // give all data value
-    for (let index = 0; index < componentList.length; index++)
+    for (let index = 0; index < elementList.length; index++)
     {
-      if (componentList[index].type === 'textfield')
+      const element = elementList[index];
+      if ('byPass' in this.ElementList[element.type])
       {
-        const element: HTMLInputElement | null = this.renderRoot.querySelector(`input[name="${componentList[index].key}"]`);
-        const value: string | undefined = element?.value;
-        if (!this.validateData(componentList[index], value))
-        {
-          return;
-        }
-        data[componentList[index].key] = value ?? '';
+        if (this.ElementList[element.type].byPass!(element) === true) { continue; }
       }
-      else if (componentList[index].type === 'password')
-      {
-        const element: HTMLInputElement | null = this.renderRoot.querySelector(`input[name="${componentList[index].key}"]`);
-        const value: string | undefined = element?.value;
-        if (!this.validateData(componentList[index], value))
-        {
-          return;
-        }
-        data[componentList[index].key] = value ?? '';
-      }
+
+      const value = this.ElementList[element.type].value!(element, this);
+      const validate = this.ElementList[element.type].validate!(element, this);
+      if (validate !== true) { return; }
+      data[element.key] = value ?? '';
     }
 
     this.Resolve = data;
@@ -231,61 +230,25 @@ export class GuiFormBuilderElementClass extends LitElement
 
   render(): TemplateResult | typeof nothing
   {
-    if (this.Data?.componentList == null) { return nothing; }
+    if (this.Data?.elementList == null) { return nothing; }
     return html` 
       ${this.contentTemplate()}
     `;
   }
 
-  private validateData(item: formItem, value: string | undefined): boolean
-  {
-    if (item.validate?.required === true && value === undefined)
-    {
-      this.Error = new Error(`IsRequired_${item.key}`);
-      return false;
-    }
-
-    if (item.validate?.required === true && value!.length <= 0)
-    {
-      this.Error = new Error(`IsRequired_${item.key}`);
-      return false;
-    }
-
-    if (item.validate?.pattern != null)
-    {
-      if (value == null)
-      {
-        this.Error = new Error(`IsRequired_${item.key}`);
-        return false;
-      }
-      const regex = new RegExp(item.validate.pattern);
-      if (!regex.test(value))
-      {
-        this.Error = new Error(`IsNotValid_${item.key}`);
-        return false;
-      }
-    }
-
-    return true;
-  }
-
   private contentTemplate(): TemplateResult | typeof nothing
   {
-    if (this.textfield == null) { return nothing; }
-    if (this.password == null) { return nothing; }
-    if (this.submit == null) { return nothing; }
-    if (this.image == null) { return nothing; }
-    return html`${this.Data!.componentList.map((item) =>
+    return html`${this.Data!.elementList.map((item) =>
       {
-        if (item.type in this)
+        if (item.type in this.ElementList)
         {
           if (this.GridArea === true)
           {
-            return html`<div style="grid-area:${item.key};" class=${item.key + ' gui-form-builder'}>${(this as any)[item.type](item)}</div>`;
+            return html`<div style="grid-area:${item.key};" class=${item.key + ' gui-form-builder'}>${this.ElementList[item.type].template(item, this)}</div>`;
           }
           else
           {
-            return html`<div class=${item.key + ' gui-form-builder'}>${(this as any)[item.type](item)}</div>`;
+            return html`<div class=${item.key + ' gui-form-builder'}>${this.ElementList[item.type].template(item, this)}</div>`;
           }
         }
         else
@@ -294,51 +257,5 @@ export class GuiFormBuilderElementClass extends LitElement
         }
       }
     )}`;
-  }
-
-  private textfield(item: formItem): TemplateResult | typeof nothing
-  {
-    if (this.textfield == null) { return nothing; }
-    return html`
-    <input 
-      type="text" 
-      name="${item.key}" 
-      placeholder=${ifDefined(item.placeholder)}
-    />`;
-  }
-
-  private image(item: formItem): TemplateResult | typeof nothing
-  {
-    if (this.image == null) { return nothing; }
-    return html`
-    <img
-      id="${item.key}"
-      src="${ifDefined(item.value)}"
-      alt="${ifDefined(item.label)}" 
-    />`;
-  }
-
-  private password(item: formItem): TemplateResult | typeof nothing
-  {
-    return html`
-    <input
-      type="password"
-      name="${item.key}"
-      placeholder=${ifDefined(item.placeholder)}
-    />`;
-  }
-
-  @eventOptions({ passive: true })
-  private submit(item: formItem): TemplateResult
-  {
-    return html`
-      <button
-        type="button"
-        name="${item.key}"
-        @click=${this._sendData}
-      >
-        ${item.label}
-      </button>
-    `;
   }
 }

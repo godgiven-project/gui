@@ -1,3 +1,4 @@
+import type { TemplateResult, nothing, LitElement } from 'lit';
 // ******************************************************************************
 // ***************** formItem ****************** //
 export interface formItem
@@ -29,11 +30,26 @@ export interface formBuilder
   method?: 'POST' | 'GET';
   action: string;
   headers?: Record<string, string>;
-  componentList: formItem[];
+  elementList: formItem[];
 }
 
 export interface input
 {
   title: string;
   disabled?: boolean;
+}
+
+export interface htmlFormBuilder extends LitElement
+{
+  Error?: any;
+  Resolve?: any;
+  sendData?: () => void;
+}
+
+export interface itemFormBuilder
+{
+  template: (item: formItem, formBuilder: htmlFormBuilder) => TemplateResult | typeof nothing;
+  validate?: (item: formItem, formBuilder: htmlFormBuilder) => boolean;
+  value?: (item: formItem, formBuilder: htmlFormBuilder) => string;
+  byPass?: (item: formItem) => boolean;
 }
