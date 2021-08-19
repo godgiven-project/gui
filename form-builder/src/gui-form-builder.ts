@@ -175,11 +175,22 @@ export class GuiFormBuilderElementClass extends LitElement
       this.headerList = this.Data.headers;
     }
 
+    let action = this.Data.action;
+    const method = this.Data.method ?? 'POST';
+    if (method === 'GET')
+    {
+      const query = Object.keys(data).map(function(k)
+      {
+        return encodeURIComponent(k) + '=' + encodeURIComponent(data[k]);
+      }).join('&');
+      action = `${action}?${query}`;
+    }
+
     this.Loading = true;
-    fetch(this.Data.action, {
-      method: this.Data.method ?? 'POST', // or 'PUT'
+    fetch(action, {
+      method: method,
       headers: this.headerList,
-      body: JSON.stringify(data),
+      body: method === 'GET' ? null : JSON.stringify(data),
     })
       .then(async response =>
       {
