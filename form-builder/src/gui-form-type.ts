@@ -4,16 +4,12 @@ import type { TemplateResult, nothing, LitElement } from 'lit';
 export interface formItem
 {
   label?: string;
-  labelPosition?: string;
   placeholder?: string;
-  tableView?: true;
   validate?: validateElement;
   value?: string;
+  align?: 'center' | 'right' | 'left';
   key: string;
   type: string;
-  input: boolean;
-  protected?: boolean;
-  disableOnInvalid?: boolean;
 }
 
 export interface validateElement

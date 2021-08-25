@@ -1,14 +1,14 @@
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<script src="../dist/gui-form-builder.js" type="module"></script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="../dist/gui-form-builder.js" type="module"></script>
     <link rel="preconnect" href="//fdn.fontcdn.ir">
     <link rel="preconnect" href="//v1.fontapi.ir">
     <link href="https://v1.fontapi.ir/css/Vazir" rel="stylesheet">
-		<title>ui builder</title>
-	</head>
-	<body>
+    <title>ui builder</title>
+  </head>
+  <body>
     <style>
       * {
         font-family: 'Vazir', sans-serif;
@@ -30,7 +30,8 @@
         background: #8bbabb;
       }
 
-      .selfPresentForm { 
+      .selfPresentForm {
+        text-align: left;
         grid-template-columns: 1fr;
         --gui-builder-end-padding: 0px;
       }
@@ -137,25 +138,28 @@
         "action": "https://6103ed303356ea001748f582.mockapi.io/api/v1/users/",
         "elementList": [
           {
-              "placeholder": "user name",
-              "validate": {
-                  "required": true
-              },
-              "key": "userName",
-              "type": "TextField",
+            "label": "user name",
+            "placeholder": "user name",
+            "validate": {
+                "required": true
+            },
+            "key": "userName",
+            "type": "TextField",
           },
           {
-              "placeholder": "Password",
-              "validate": {
-                  "required": true
-              },
-              "key": "password",
-              "type": "Password",
+            "label": "Password",
+            "placeholder": "Password",
+            "validate": {
+                "required": true
+            },
+            "key": "password",
+            "type": "Password",
           },
           {
               "type": "Submit",
               "label": "login",
               "key": "submit",
+              "align": "center"
           }
         ]
       };
@@ -172,5 +176,5 @@
         console.log(error);
       }
     </script>
-	</body>
+  </body>
 </html>

@@ -9,11 +9,15 @@ export const Password: itemFormBuilder =
   {
     if (formBuilder == null) { return nothing; }
     return html`
-    <input
-      type="password"
-      name="${item.key}"
-      placeholder=${ifDefined(item.placeholder)}
-    />`;
+      <label for="${item.key}">
+        ${item.label}
+      </label>
+      <input
+        type="password"
+        name="${item.key}"
+        placeholder=${ifDefined(item.placeholder)}
+      />
+    `;
   },
   value(item: formItem, formBuilder: htmlFormBuilder): string
   {
