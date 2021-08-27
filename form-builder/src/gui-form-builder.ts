@@ -109,6 +109,18 @@ export class GuiFormBuilderElementClass extends LitElement
         border-color: var(--gui-builder-primary);
         color: var(--gui-builder-primary);
       }
+
+      .gui-center{
+        text-align: center;
+      }
+
+      .gui-left{
+        text-align: left;
+      }
+
+      .gui-right{
+        text-align: right;
+      }
     `
   ];
 
@@ -253,13 +265,27 @@ export class GuiFormBuilderElementClass extends LitElement
       {
         if (item.type in this.ElementList)
         {
+          const align = item.align != null ? 'gui-' + item.align : '';
           if (this.GridArea === true)
           {
-            return html`<div style="grid-area:${item.key};" class=${item.key + ' gui-form-builder'}>${this.ElementList[item.type].template(item, this)}</div>`;
+            return html`
+              <div 
+                style="grid-area:${item.key};" 
+                class=${item.key + ' gui-form-builder ' + align}
+              >
+                ${this.ElementList[item.type].template(item, this)}
+              </div>
+            `;
           }
           else
           {
-            return html`<div class=${item.key + ' gui-form-builder'}>${this.ElementList[item.type].template(item, this)}</div>`;
+            return html`
+              <div
+                class=${item.key + ' gui-form-builder ' + align}
+              >
+                ${this.ElementList[item.type].template(item, this)}
+              </div>
+            `;
           }
         }
         else
