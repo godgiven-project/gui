@@ -5,7 +5,6 @@ import summary from 'rollup-plugin-summary';
 
 export default {
   plugins: [
-
     html({
       input: './demo/index.html',
     }),
@@ -14,6 +13,7 @@ export default {
     summary(),
   ],
   output: {
+    format: 'iife',
     dir: 'build',
   },
   preserveEntrySignatures: 'strict',
